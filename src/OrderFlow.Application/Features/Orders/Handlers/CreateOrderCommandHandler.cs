@@ -6,29 +6,30 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Orders.Handlers;
 
-public class CreateOrderCommandHandler(
-    IProductRepository productRepository,
-    IOrderRepository orderRepository,
-    OrderFactory orderFactory): IRequestHandler<CreateOrderCommand, Result<Guid>>
+public class CreateOrderCommandHandler(IProductRepository productRepository, IOrderRepository orderRepository)
+    : IRequestHandler<CreateOrderCommand, Result<Guid>>
 {
     private readonly IProductRepository productRepository = productRepository;
     private readonly IOrderRepository orderRepository = orderRepository;
-    private readonly OrderFactory orderFactory = orderFactory;
 
-    public async Task<Result<Guid>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
-        var productIds = request.Items
-            .Select(i => i.ProductId)
-            .ToList();
+        var productIds = command.Items.Select(i => i.ProductId).ToList();
         var products = await productRepository.GetByIdsAsync(productIds);
 
-        var orderCreationResult = OrderFactory
-            .CreateOrderWithItems(Guid.NewGuid(), request.CustomerId, request.Items, products);
+        var orderCreationResult = OrderFactory.CreateOrderWithItems(
+            Guid.NewGuid(),
+            command.CustomerId,
+            command.Items,
+            products
+        );
 
         if (!orderCreationResult.IsSuccess)
         {
-            return Result<Guid>
-                .Failure(orderCreationResult.Error ?? "An unexpected error occurred.");
+            return Result<Guid>.Failure(
+                orderCreationResult.ErrorCode!,
+                orderCreationResult.Message!
+            );
         }
 
         var order = orderCreationResult.Value!;

@@ -1,4 +1,6 @@
 using MediatR;
+using OrderFlow.Api.Common.Models;
+using OrderFlow.Api.Extensions;
 using OrderFlow.Application.Common.DTOs;
 using OrderFlow.Application.Features.Customers.Commands;
 using OrderFlow.Application.Features.Customers.Queries;
@@ -14,49 +16,52 @@ public static class CustomerEndpoints
 
         group.MapGet("/", async (ISender sender) =>
         {
-            var customers = await sender.Send(new GetAllCustomersQuery());
-            return Results.Ok(customers ?? new List<CustomerDto>());
+            var result = await sender.Send(new GetAllCustomersQuery());
+            return Results.Ok(result.Value);
         })
-        .Produces<List<CustomerDto>>(StatusCodes.Status200OK)
+        .Produces<ApiResponse<List<CustomerDto>>>(StatusCodes.Status200OK)
         .WithName("GetAllCustomers");
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
         {
-            var customer = await sender.Send(new GetCustomerByIdQuery(id));
-            return customer is not null ? Results.Ok(customer) : Results.NotFound();
+            var result = await sender.Send(new GetCustomerByIdQuery(id));
+            return result.ToHttpResult();
         })
-        .Produces<CustomerDto>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<ApiResponse<CustomerDto>>(StatusCodes.Status200OK)
+        .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("GetCustomerById");
 
         group.MapPost("/", async (CreateCustomerRequest request, ISender sender) =>
         {
             var command = new CreateCustomerCommand(request.FullName, request.Email);
-            var customerId = await sender.Send(command);
-            return Results.Created($"/api/customers/{customerId}", new { CustomerId = customerId });
+
+            var result = await sender.Send(command);
+            return result.ToHttpResult(locationUri: $"/api/customers/{result.Value}");
         })
-        .Produces<object>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<ApiResponse<Guid>>(StatusCodes.Status201Created)
+        .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
+        .Produces<ApiResponse<object>>(StatusCodes.Status409Conflict)
         .WithName("CreateCustomer");
 
         group.MapPut("/{id:guid}", async (Guid id, UpdateCustomerRequest request, ISender sender) =>
         {
             var command = new UpdateCustomerCommand(id, request.FullName, request.Email);
-            await sender.Send(command);
-            return Results.NoContent();
+
+            var result = await sender.Send(command);
+            return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
+        .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("UpdateCustomer");
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender) =>
         {
-            await sender.Send(new DeleteCustomerCommand(id));
-            return Results.NoContent();
+            var result = await sender.Send(new DeleteCustomerCommand(id));
+            return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("DeleteCustomer");
     }
 }

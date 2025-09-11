@@ -19,12 +19,19 @@ public class OrderFactory
             var product = products.FirstOrDefault(p => p.Id == itemInput.ProductId);
             if (product is null)
             {
-                return Result<Order>
-                    .Failure($"Product with ID '{itemInput.ProductId}' was not found.");
+                return Result<Order>.Failure(
+                    "Order.ProductNotFound",
+                    $"Product with ID '{itemInput.ProductId}' was not found."
+                );
             }
 
-            var orderItem = OrderItem
-                .Create(Guid.NewGuid(), product.Id, itemInput.Quantity, product.Price.Value);
+            var orderItem = OrderItem.Create(
+                Guid.NewGuid(),
+                product.Id,
+                itemInput.Quantity,
+                product.Price.Value
+            );
+
             order.AddItem(orderItem);
         }
 

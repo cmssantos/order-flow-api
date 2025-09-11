@@ -22,4 +22,13 @@ public class Customer
 
         return new Customer(id, customerName, customerEmail);
     }
+
+    public void Update(string name, string email)
+    {
+        var updatedName = CustomerName.Create(name);
+        var updatedEmail = Email.Create(email);
+
+        Name = updatedName;
+        Email = updatedEmail;
+    }
 }

@@ -10,23 +10,24 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
     : IRequestHandler<CreateProductCommand, Result<Guid>>
 {
     private readonly IProductRepository productRepository = productRepository;
-    
-    public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+
+    public async Task<Result<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var existing = await productRepository.GetBySkuAsync(request.Sku);
+        var existing = await productRepository.GetBySkuAsync(command.Sku);
         if (existing is not null)
         {
-            return Result<Guid>.Failure($"A product with SKU '{request.Sku}' already exists.");
+            return Result<Guid>.Failure(
+                "Product.SkuAlreadyUsed",
+                $"SKU '{command.Sku}' is already in use."
+            );
         }
 
-        var productCreationResult = ProductFactory
-            .CreateProduct(Guid.NewGuid(), request.Name, request.Sku, request.Price);
-
-        if (!productCreationResult.IsSuccess)
-        {
-            return Result<Guid>
-                .Failure(productCreationResult.Error ?? "An unexpected error occurred.");
-        }
+        var productCreationResult = ProductFactory.CreateProduct(
+            Guid.NewGuid(),
+            command.Name,
+            command.Sku,
+            command.Price
+        );
 
         var product = productCreationResult.Value!;
         await productRepository.AddAsync(product);

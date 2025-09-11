@@ -25,4 +25,13 @@ public class Product
 
         return new Product(id, productSku, productName, productPrice);
     }
+
+    public void Update(string name, decimal price)
+    {
+        var updatedName = ProductName.Create(name);
+        var updatedPrice = UnitPrice.Create(price);
+
+        Name = updatedName;
+        Price = updatedPrice;
+    }
 }

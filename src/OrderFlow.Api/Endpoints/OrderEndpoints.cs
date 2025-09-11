@@ -1,7 +1,9 @@
 using MediatR;
+using OrderFlow.Api.Common.Models;
+using OrderFlow.Api.Extensions;
+using OrderFlow.Application.Common.DTOs;
 using OrderFlow.Application.Features.Orders.Commands;
 using OrderFlow.Application.Features.Orders.Queries;
-using OrderFlow.Application.DTOs;
 
 namespace OrderFlow.Api.Endpoints;
 
@@ -13,22 +15,23 @@ public static class OrderEndpoints
 
         group.MapPost("/", async (CreateOrderCommand command, ISender sender) =>
         {
-            var orderId = await sender.Send(command);
-            return Results.Created($"/api/orders/{orderId}", new { OrderId = orderId });
+            var result = await sender.Send(command);
+            return result.ToHttpResult(locationUri: $"/api/orders/{result.Value}");
         })
-        .Produces<object>(StatusCodes.Status201Created)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<ApiResponse<Guid>>(StatusCodes.Status201Created)
+        .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
+        .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("CreateOrder");
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
         {
             var query = new GetOrderByIdQuery(id);
-            var order = await sender.Send(query);
 
-            return order is not null ? Results.Ok(order) : Results.NotFound();
+            var result = await sender.Send(query);
+            return result.ToHttpResult();
         })
-        .Produces<OrderDto>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<ApiResponse<OrderDto>>(StatusCodes.Status200OK)
+        .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("GetOrderById");
     }
 }

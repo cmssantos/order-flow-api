@@ -2,26 +2,25 @@ namespace OrderFlow.Application.Common.Models;
 
 public class Result<T>
 {
-    public T? Value { get; }
     public bool IsSuccess { get; }
-    public string? Error { get; }
+    public T? Value { get; }
+    public string? ErrorCode { get; }
+    public string? Message { get; }
 
-    private Result(T? value, bool isSuccess, string? error)
+    private Result(T value)
     {
+        IsSuccess = true;
         Value = value;
-        IsSuccess = isSuccess;
-        Error = error;
     }
 
-    public static Result<T> Success(T value) => new(value, true, null);
-
-    public static Result<T> Failure(string error)
+    private Result(string errorCode, string message)
     {
-        if (string.IsNullOrWhiteSpace(error))
-        {
-            throw new ArgumentException("Error message cannot be null or empty.", nameof(error));
-        }
-
-        return new(default, false, error);
+        IsSuccess = false;
+        ErrorCode = errorCode;
+        Message = message;
     }
+
+    public static Result<T> Success(T value) => new(value);
+
+    public static Result<T> Failure(string errorCode, string message) => new(errorCode, message);
 }

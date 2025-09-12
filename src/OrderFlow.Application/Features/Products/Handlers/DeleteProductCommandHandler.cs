@@ -12,7 +12,7 @@ public class DeleteProductCommandHandler(IProductRepository productRepository)
 
     public async Task<Result<Unit>> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(command.Id);
+        var product = await productRepository.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
         {
             return Result<Unit>.Failure(
@@ -21,7 +21,7 @@ public class DeleteProductCommandHandler(IProductRepository productRepository)
             );
         }
 
-        await productRepository.DeleteAsync(product.Id);
+        await productRepository.DeleteAsync(product.Id, cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

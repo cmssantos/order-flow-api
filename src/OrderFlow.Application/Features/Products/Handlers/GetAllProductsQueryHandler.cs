@@ -13,7 +13,7 @@ public class GetAllProductsQueryHandler(IProductRepository productRepository)
 
     public async Task<Result<List<ProductDto>>> Handle(GetAllProductsQuery query, CancellationToken cancellationToken)
     {
-        var products = await productRepository.GetAllAsync();
+        var products = await productRepository.GetAllAsync(cancellationToken);
 
         var productsDto = new List<ProductDto>();
         foreach (var product in products)

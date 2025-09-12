@@ -13,7 +13,7 @@ public class GetCustomerByIdQueryHandler(ICustomerRepository customerRepository)
 
     public async Task<Result<CustomerDto>> Handle(GetCustomerByIdQuery query, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(query.Id);
+        var customer = await customerRepository.GetByIdAsync(query.Id, cancellationToken);
         if (customer == null)
         {
             return Result<CustomerDto>.Failure(

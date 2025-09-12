@@ -12,7 +12,7 @@ public class UpdateProductCommandHandler(IProductRepository productRepository)
 
     public async Task<Result<Unit>> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(command.Id);
+        var product = await productRepository.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
         {
             return Result<Unit>.Failure(
@@ -22,7 +22,7 @@ public class UpdateProductCommandHandler(IProductRepository productRepository)
         }
 
         product.Update(command.Name, command.Price);
-        await productRepository.UpdateAsync(product);
+        await productRepository.UpdateAsync(product, cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

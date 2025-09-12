@@ -12,17 +12,16 @@ public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository
 
     public async Task<Result<Unit>> Handle(UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(command.Id);
+        var customer = await customerRepository.GetByIdAsync(command.Id, cancellationToken);
         if (customer is null)
         {
             return Result<Unit>.Failure(
                 "Customer.NotFound",
                 $"Customer with ID {command.Id} not found."
             );
-
         }
 
-        var existing = await customerRepository.GetByEmailAsync(command.Email);
+        var existing = await customerRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existing is not null && existing.Id != command.Id)
         {
             return Result<Unit>.Failure(
@@ -32,7 +31,7 @@ public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository
         }
 
         customer.Update(command.FullName, command.Email);
-        await customerRepository.UpdateAsync(customer);
+        await customerRepository.UpdateAsync(customer, cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

@@ -13,7 +13,7 @@ public class GetAllCustomersQueryHandler(ICustomerRepository customerRepository)
 
     public async Task<Result<List<CustomerDto>>> Handle(GetAllCustomersQuery query, CancellationToken cancellationToken)
     {
-        var customers = await customerRepository.GetAllAsync();
+        var customers = await customerRepository.GetAllAsync(cancellationToken);
 
         var customersDto = new List<CustomerDto>();
         foreach (var customer in customers)

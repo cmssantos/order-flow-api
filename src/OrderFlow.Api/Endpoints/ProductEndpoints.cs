@@ -14,28 +14,32 @@ public static class ProductEndpoints
     {
         var group = app.MapGroup("/products").WithTags("Products");
 
-        group.MapGet("/", async (ISender sender) =>
+        group.MapGet("/", async (ISender sender, CancellationToken cancellationToken) =>
         {
-            var result = await sender.Send(new GetAllProductsQuery());
+            var command = new GetAllProductsQuery();
+
+            var result = await sender.Send(command, cancellationToken);
             return Results.Ok(result.Value);
         })
         .Produces<ApiResponse<List<ProductDto>>>(StatusCodes.Status200OK)
         .WithName("GetAllProducts");
 
-        group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
+        group.MapGet("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
         {
-            var result = await sender.Send(new GetProductByIdQuery(id));
+            var command = new GetProductByIdQuery(id);
+
+            var result = await sender.Send(command, cancellationToken);
             return result.ToHttpResult();
         })
         .Produces<ApiResponse<ProductDto>>(StatusCodes.Status200OK)
         .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("GetProductById");
 
-        group.MapPost("/", async (CreateProductRequest request, ISender sender) =>
+        group.MapPost("/", async (CreateProductRequest request, ISender sender, CancellationToken cancellationToken) =>
         {
             var command = new CreateProductCommand(request.Name, request.Sku, request.Price);
 
-            var result = await sender.Send(command);
+            var result = await sender.Send(command, cancellationToken);
             return result.ToHttpResult(locationUri: $"/api/products/{result.Value}");
         })
         .Produces<ApiResponse<Guid>>(StatusCodes.Status201Created)
@@ -43,11 +47,12 @@ public static class ProductEndpoints
         .Produces<ApiResponse<object>>(StatusCodes.Status409Conflict)
         .WithName("CreateProduct");
 
-        group.MapPut("/{id:guid}", async (Guid id, UpdateProductRequest request, ISender sender) =>
+        group.MapPut("/{id:guid}",
+            async (Guid id, UpdateProductRequest request, ISender sender, CancellationToken cancellationToken) =>
         {
             var command = new UpdateProductCommand(id, request.Name, request.Price);
 
-            var result = await sender.Send(command);
+            var result = await sender.Send(command, cancellationToken);
             return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)
@@ -55,9 +60,11 @@ public static class ProductEndpoints
         .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
         .WithName("UpdateProduct");
 
-        group.MapDelete("/{id:guid}", async (Guid id, ISender sender) =>
+        group.MapDelete("/{id:guid}", async (Guid id, ISender sender, CancellationToken cancellationToken) =>
         {
-            var result = await sender.Send(new DeleteProductCommand(id));
+            var command = new DeleteProductCommand(id);
+
+            var result = await sender.Send(command, cancellationToken);
             return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)

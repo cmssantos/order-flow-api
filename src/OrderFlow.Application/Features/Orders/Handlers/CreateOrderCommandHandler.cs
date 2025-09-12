@@ -15,7 +15,7 @@ public class CreateOrderCommandHandler(IProductRepository productRepository, IOr
     public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var productIds = command.Items.Select(i => i.ProductId).ToList();
-        var products = await productRepository.GetByIdsAsync(productIds);
+        var products = await productRepository.GetByIdsAsync(productIds, cancellationToken);
 
         var orderCreationResult = OrderFactory.CreateOrderWithItems(
             Guid.NewGuid(),
@@ -33,7 +33,7 @@ public class CreateOrderCommandHandler(IProductRepository productRepository, IOr
         }
 
         var order = orderCreationResult.Value!;
-        await orderRepository.AddAsync(order);
+        await orderRepository.AddAsync(order, cancellationToken);
 
         return Result<Guid>.Success(order.Id);
     }

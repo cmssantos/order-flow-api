@@ -13,7 +13,7 @@ public class CreateCustomerCommandHandler(ICustomerRepository customerRepository
 
     public async Task<Result<Guid>> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
     {
-        var existing = await customerRepository.GetByEmailAsync(command.Email);
+        var existing = await customerRepository.GetByEmailAsync(command.Email, cancellationToken);
         if (existing is not null)
         {
             return Result<Guid>.Failure(
@@ -22,11 +22,14 @@ public class CreateCustomerCommandHandler(ICustomerRepository customerRepository
             );
         }
 
-        var customerCreationResult = CustomerFactory
-            .CreateCustomer(Guid.NewGuid(), command.FullName, command.Email);
+        var customerCreationResult = CustomerFactory.CreateCustomer(
+            Guid.NewGuid(),
+            command.FullName,
+            command.Email
+        );
 
         var customer = customerCreationResult.Value!;
-        await customerRepository.AddAsync(customer);
+        await customerRepository.AddAsync(customer, cancellationToken);
 
         return Result<Guid>.Success(customer.Id);
     }

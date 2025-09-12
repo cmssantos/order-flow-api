@@ -13,7 +13,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
 
     public async Task<Result<Guid>> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
-        var existing = await productRepository.GetBySkuAsync(command.Sku);
+        var existing = await productRepository.GetBySkuAsync(command.Sku, cancellationToken);
         if (existing is not null)
         {
             return Result<Guid>.Failure(
@@ -30,7 +30,7 @@ public class CreateProductCommandHandler(IProductRepository productRepository)
         );
 
         var product = productCreationResult.Value!;
-        await productRepository.AddAsync(product);
+        await productRepository.AddAsync(product, cancellationToken);
 
         return Result<Guid>.Success(product.Id);
     }

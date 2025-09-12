@@ -13,7 +13,7 @@ public class GetProductByIdQueryHandler(IProductRepository productRepository)
 
     public async Task<Result<ProductDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(query.Id);
+        var product = await productRepository.GetByIdAsync(query.Id, cancellationToken);
         if (product == null)
         {
             return Result<ProductDto>.Failure(

@@ -5,9 +5,9 @@ namespace OrderFlow.Application.Features.Customers.Services;
 
 public class CustomerFactory
 {
-    public static Result<Customer> CreateCustomer(Guid customerId, string name, string email)
+    public static Result<Customer> CreateCustomer(string name, string email)
     {
-        var customer = Customer.Create(customerId, name, email);
+        var customer = Customer.Create(name, email);
         return Result<Customer>.Success(customer);
     }
 }

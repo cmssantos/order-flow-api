@@ -5,14 +5,13 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class UpdateProductCommandHandler(IProductRepository productRepository)
-    : IRequestHandler<UpdateProductCommand, Result<Unit>>
+public class UpdateProductCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<UpdateProductCommand, Result<Unit>>
 {
-    private readonly IProductRepository productRepository = productRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Unit>> Handle(UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(command.Id, cancellationToken);
+        var product = await unitOfWork.Products.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
         {
             return Result<Unit>.Failure(
@@ -22,7 +21,8 @@ public class UpdateProductCommandHandler(IProductRepository productRepository)
         }
 
         product.Update(command.Name, command.Price);
-        await productRepository.UpdateAsync(product, cancellationToken);
+        await unitOfWork.Products.UpdateAsync(product, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

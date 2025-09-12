@@ -4,6 +4,7 @@ using OrderFlow.Api.Extensions;
 using OrderFlow.Application.Common.DTOs;
 using OrderFlow.Application.Features.Orders.Commands;
 using OrderFlow.Application.Features.Orders.Queries;
+using OrderFlow.Application.Features.Orders.Requests;
 
 namespace OrderFlow.Api.Endpoints;
 
@@ -13,8 +14,13 @@ public static class OrderEndpoints
     {
         var group = app.MapGroup("/orders").WithTags("Orders");
 
-        group.MapPost("/", async (CreateOrderCommand command, ISender sender) =>
+        group.MapPost("/", async (CreateOrderRequest request, ISender sender) =>
         {
+            var items = request.Items
+                .Select(i => new OrderItemInput(i.ProductId, i.Quantity))
+                .ToList();
+            var command = new CreateOrderCommand(request.CustomerId, items);
+
             var result = await sender.Send(command);
             return result.ToHttpResult(locationUri: $"/api/orders/{result.Value}");
         })

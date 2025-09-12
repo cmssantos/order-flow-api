@@ -1,28 +1,30 @@
+using OrderFlow.Domain.Common;
 using OrderFlow.Domain.Enums;
 using OrderFlow.Domain.Exceptions;
 
 namespace OrderFlow.Domain.Entities;
 
-public class Order
+public class Order: BaseEntity
 {
-    public Guid Id { get; private set; }
     public Guid CustomerId { get; private set; }
-    public DateTime OrderDate { get; private set; }
     public OrderStatus Status { get; private set; }
 
-    private readonly List<OrderItem> orderItems;
+    private readonly List<OrderItem> orderItems = [];
     public IReadOnlyList<OrderItem> OrderItems => orderItems.AsReadOnly();
 
-    private Order(Guid id, Guid customerId, DateTime orderDate, OrderStatus status, IEnumerable<OrderItem> orderItems)
+    private Order()
     {
-        Id = id;
+        // For EF Core
+    }
+
+    private Order(Guid customerId, OrderStatus status, IEnumerable<OrderItem> orderItems)
+    {
         CustomerId = customerId;
-        OrderDate = orderDate;
         Status = status;
         this.orderItems = [.. orderItems ?? []];
     }
 
-    public static Order Create(Guid id, Guid customerId, DateTime orderDate, IEnumerable<OrderItem> orderItems)
+    public static Order Create(Guid customerId, IEnumerable<OrderItem> orderItems)
     {
         if (orderItems == null || !orderItems.Any())
         {
@@ -32,7 +34,7 @@ public class Order
             );
         }
 
-        return new Order(id, customerId, orderDate, OrderStatus.Pending, orderItems);
+        return new Order(customerId, OrderStatus.Pending, orderItems);
     }
 
     public void AddItem(OrderItem item)
@@ -59,15 +61,12 @@ public class Order
 
     public void RemoveItem(Guid itemId)
     {
-        var itemToRemove = orderItems.FirstOrDefault(oi => oi.Id == itemId);
-        if (itemToRemove == null)
-        {
+        var itemToRemove = orderItems.FirstOrDefault(oi => oi.Id == itemId) ??
             throw new DomainValidationException(
                 "OrderItem.NotFound",
                 $"Order item with ID '{itemId}' was not found.",
                 itemId
             );
-        }
 
         orderItems.Remove(itemToRemove);
     }

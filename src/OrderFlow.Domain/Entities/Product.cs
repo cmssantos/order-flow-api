@@ -1,29 +1,33 @@
+using OrderFlow.Domain.Common;
 using OrderFlow.Domain.ValueObjects;
 
 namespace OrderFlow.Domain.Entities;
 
-public class Product
+public class Product: BaseEntity
 {
-    public Guid Id { get; private set; }
-    public Sku Sku { get; private set; }
-    public ProductName Name { get; private set; }
-    public UnitPrice Price { get; private set; }
+    public Sku Sku { get; private set; } = null!;
+    public ProductName Name { get; private set; } = null!;
+    public UnitPrice Price { get; private set; } = null!;
 
-    private Product(Guid id, Sku sku, ProductName name, UnitPrice price)
+    private Product()
     {
-        Id = id;
+        // For EF Core
+    }
+
+    private Product(Sku sku, ProductName name, UnitPrice price)
+    {
         Sku = sku;
         Name = name;
         Price = price;
     }
 
-    public static Product Create(Guid id, string sku, string name, decimal price)
+    public static Product Create(string sku, string name, decimal price)
     {
         var productSku = Sku.Create(sku);
         var productName = ProductName.Create(name);
         var productPrice = UnitPrice.Create(price);
 
-        return new Product(id, productSku, productName, productPrice);
+        return new Product(productSku, productName, productPrice);
     }
 
     public void Update(string name, decimal price)

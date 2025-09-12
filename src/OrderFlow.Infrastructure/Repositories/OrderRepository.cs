@@ -1,16 +1,26 @@
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Domain.Interfaces.Repositories;
+using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.Repositories;
 
-public class OrderRepository: Repository<Order>, IOrderRepository
+public class OrderRepository(OrderFlowDbContext context): Repository<Order>(context), IOrderRepository
 {
-    public Task<IEnumerable<Order>> GetByCustomerIdAsync(Guid customerId)
+    private readonly OrderFlowDbContext context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly DbSet<Order> dbSet = context.Set<Order>();
+
+    public Task<IEnumerable<Order>> GetByCustomerIdAsync(
+        Guid customerId,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(DateTime startDate, DateTime endDate)
+    public Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

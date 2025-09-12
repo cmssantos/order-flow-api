@@ -6,19 +6,16 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Orders.Handlers;
 
-public class CreateOrderCommandHandler(IProductRepository productRepository, IOrderRepository orderRepository)
-    : IRequestHandler<CreateOrderCommand, Result<Guid>>
+public class CreateOrderCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<CreateOrderCommand, Result<Guid>>
 {
-    private readonly IProductRepository productRepository = productRepository;
-    private readonly IOrderRepository orderRepository = orderRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Guid>> Handle(CreateOrderCommand command, CancellationToken cancellationToken)
     {
         var productIds = command.Items.Select(i => i.ProductId).ToList();
-        var products = await productRepository.GetByIdsAsync(productIds, cancellationToken);
+        var products = await unitOfWork.Products.GetByIdsAsync(productIds, cancellationToken);
 
         var orderCreationResult = OrderFactory.CreateOrderWithItems(
-            Guid.NewGuid(),
             command.CustomerId,
             command.Items,
             products
@@ -33,7 +30,8 @@ public class CreateOrderCommandHandler(IProductRepository productRepository, IOr
         }
 
         var order = orderCreationResult.Value!;
-        await orderRepository.AddAsync(order, cancellationToken);
+        await unitOfWork.Orders.AddAsync(order, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Guid>.Success(order.Id);
     }

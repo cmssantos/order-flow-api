@@ -6,8 +6,13 @@ public class OrderItem
 {
     public Guid Id { get; private set; }
     public Guid ProductId { get; private set; }
-    public Quantity Quantity { get; private set; }
-    public UnitPrice UnitPrice { get; private set; }
+    public Quantity Quantity { get; private set; } = null!;
+    public UnitPrice UnitPrice { get; private set; } = null!;
+
+    private OrderItem()
+    {
+        // EF Core only
+    }
 
     private OrderItem(Guid id, Guid productId, Quantity quantity, UnitPrice unitPrice)
     {

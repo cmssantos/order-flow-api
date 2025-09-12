@@ -6,14 +6,14 @@ using OrderFlow.Application.Features.Products.Queries;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class GetProductByIdQueryHandler(IProductRepository productRepository)
+public class GetProductByIdQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetProductByIdQuery, Result<ProductDto>>
 {
-    private readonly IProductRepository productRepository = productRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<ProductDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(query.Id, cancellationToken);
+        var product = await unitOfWork.Products.GetByIdAsync(query.Id, cancellationToken);
         if (product == null)
         {
             return Result<ProductDto>.Failure(

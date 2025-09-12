@@ -1,15 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using OrderFlow.Domain.Interfaces.Repositories;
+using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.Repositories;
 
-public class Repository<T>(DbContext context): IRepository<T> where T : class
+public class Repository<T>(OrderFlowDbContext context): IRepository<T> where T : class
 {
-    private readonly DbContext context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly OrderFlowDbContext context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly DbSet<T> dbSet = context.Set<T>();
 
-     public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default) =>
-        await dbSet.AsNoTracking().ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default) =>
+       await dbSet.AsNoTracking().ToListAsync(cancellationToken);
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
         await dbSet.FindAsync([id], cancellationToken);

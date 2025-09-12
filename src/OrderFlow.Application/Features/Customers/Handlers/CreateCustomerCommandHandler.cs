@@ -6,14 +6,13 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Customers.Handlers;
 
-public class CreateCustomerCommandHandler(ICustomerRepository customerRepository)
-    : IRequestHandler<CreateCustomerCommand, Result<Guid>>
+public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<CreateCustomerCommand, Result<Guid>>
 {
-    private readonly ICustomerRepository customerRepository = customerRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Guid>> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
     {
-        var existing = await customerRepository.GetByEmailAsync(command.Email, cancellationToken);
+        var existing = await unitOfWork.Customers.GetByEmailAsync(command.Email, cancellationToken);
         if (existing is not null)
         {
             return Result<Guid>.Failure(
@@ -23,13 +22,13 @@ public class CreateCustomerCommandHandler(ICustomerRepository customerRepository
         }
 
         var customerCreationResult = CustomerFactory.CreateCustomer(
-            Guid.NewGuid(),
             command.FullName,
             command.Email
         );
 
         var customer = customerCreationResult.Value!;
-        await customerRepository.AddAsync(customer, cancellationToken);
+        await unitOfWork.Customers.AddAsync(customer, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Guid>.Success(customer.Id);
     }

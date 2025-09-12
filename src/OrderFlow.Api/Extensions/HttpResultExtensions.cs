@@ -10,14 +10,14 @@ public static class HttpResultExtensions
     {
         var errorCode = response.ErrorCode?.ToLower() ?? string.Empty;
 
-        if (errorCode.Contains("notFound", StringComparison.CurrentCultureIgnoreCase))
+        if (errorCode.Contains("NotFound", StringComparison.CurrentCultureIgnoreCase))
         {
             return Results.NotFound(response);
         }
 
-        if (errorCode.Contains("alreadyUsed", StringComparison.CurrentCultureIgnoreCase) ||
-            errorCode.Contains("alreadyExists", StringComparison.CurrentCultureIgnoreCase) ||
-            errorCode.Contains("conflict"))
+        if (errorCode.Contains("AlreadyUsed", StringComparison.CurrentCultureIgnoreCase) ||
+            errorCode.Contains("AlreadyExists", StringComparison.CurrentCultureIgnoreCase) ||
+            errorCode.Contains("Conflict", StringComparison.CurrentCultureIgnoreCase))
         {
             return Results.Conflict(response);
         }

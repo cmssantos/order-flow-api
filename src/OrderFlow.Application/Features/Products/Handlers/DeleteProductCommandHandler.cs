@@ -5,14 +5,13 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class DeleteProductCommandHandler(IProductRepository productRepository)
-    : IRequestHandler<DeleteProductCommand, Result<Unit>>
+public class DeleteProductCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<DeleteProductCommand, Result<Unit>>
 {
-    private readonly IProductRepository productRepository = productRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Unit>> Handle(DeleteProductCommand command, CancellationToken cancellationToken)
     {
-        var product = await productRepository.GetByIdAsync(command.Id, cancellationToken);
+        var product = await unitOfWork.Products.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
         {
             return Result<Unit>.Failure(
@@ -21,7 +20,8 @@ public class DeleteProductCommandHandler(IProductRepository productRepository)
             );
         }
 
-        await productRepository.DeleteAsync(product.Id, cancellationToken);
+        await unitOfWork.Products.DeleteAsync(product.Id, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

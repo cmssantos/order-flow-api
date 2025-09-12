@@ -5,14 +5,13 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Customers.Handlers;
 
-public class DeleteCustomerCommandHandler(ICustomerRepository customerRepository)
-    : IRequestHandler<DeleteCustomerCommand, Result<Unit>>
+public class DeleteCustomerCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<DeleteCustomerCommand, Result<Unit>>
 {
-    private readonly ICustomerRepository customerRepository = customerRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Unit>> Handle(DeleteCustomerCommand command, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(command.Id, cancellationToken);
+        var customer = await unitOfWork.Customers.GetByIdAsync(command.Id, cancellationToken);
         if (customer is null)
         {
             return Result<Unit>.Failure(
@@ -21,7 +20,8 @@ public class DeleteCustomerCommandHandler(ICustomerRepository customerRepository
             );
         }
 
-        await customerRepository.DeleteAsync(command.Id, cancellationToken);
+        await unitOfWork.Customers.DeleteAsync(command.Id, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

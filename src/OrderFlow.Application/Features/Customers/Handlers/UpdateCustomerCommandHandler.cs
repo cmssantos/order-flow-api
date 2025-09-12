@@ -5,14 +5,13 @@ using OrderFlow.Application.Features.Customers.Commands;
 
 namespace OrderFlow.Application.Features.Customers.Handlers;
 
-public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository)
-    : IRequestHandler<UpdateCustomerCommand, Result<Unit>>
+public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<UpdateCustomerCommand, Result<Unit>>
 {
-    private readonly ICustomerRepository customerRepository = customerRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<Unit>> Handle(UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(command.Id, cancellationToken);
+        var customer = await unitOfWork.Customers.GetByIdAsync(command.Id, cancellationToken);
         if (customer is null)
         {
             return Result<Unit>.Failure(
@@ -21,7 +20,7 @@ public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository
             );
         }
 
-        var existing = await customerRepository.GetByEmailAsync(command.Email, cancellationToken);
+        var existing = await unitOfWork.Customers.GetByEmailAsync(command.Email, cancellationToken);
         if (existing is not null && existing.Id != command.Id)
         {
             return Result<Unit>.Failure(
@@ -31,7 +30,8 @@ public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository
         }
 
         customer.Update(command.FullName, command.Email);
-        await customerRepository.UpdateAsync(customer, cancellationToken);
+        await unitOfWork.Customers.UpdateAsync(customer, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);
     }

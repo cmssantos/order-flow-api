@@ -16,7 +16,9 @@ public static class CustomerEndpoints
 
         group.MapGet("/", async (ISender sender) =>
         {
-            var result = await sender.Send(new GetAllCustomersQuery());
+            var command = new GetAllCustomersQuery();
+
+            var result = await sender.Send(command);
             return Results.Ok(result.Value);
         })
         .Produces<ApiResponse<List<CustomerDto>>>(StatusCodes.Status200OK)
@@ -24,7 +26,9 @@ public static class CustomerEndpoints
 
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
         {
-            var result = await sender.Send(new GetCustomerByIdQuery(id));
+            var command = new GetCustomerByIdQuery(id);
+
+            var result = await sender.Send(command);
             return result.ToHttpResult();
         })
         .Produces<ApiResponse<CustomerDto>>(StatusCodes.Status200OK)
@@ -57,7 +61,9 @@ public static class CustomerEndpoints
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender) =>
         {
-            var result = await sender.Send(new DeleteCustomerCommand(id));
+            var command = new DeleteCustomerCommand(id);
+
+            var result = await sender.Send(command);
             return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)

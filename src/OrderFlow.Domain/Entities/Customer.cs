@@ -1,26 +1,30 @@
+using OrderFlow.Domain.Common;
 using OrderFlow.Domain.ValueObjects;
 
 namespace OrderFlow.Domain.Entities;
 
-public class Customer
+public class Customer: BaseEntity
 {
-    public Guid Id { get; private set; }
-    public CustomerName Name { get; private set; }
-    public Email Email { get; private set; }
+    public CustomerName Name { get; private set; } = null!;
+    public Email Email { get; private set; } = null!;
 
-    private Customer(Guid id, CustomerName name, Email email)
+    private Customer()
     {
-        Id = id;
+        // For EF Core
+    }
+
+    private Customer(CustomerName name, Email email)
+    {
         Name = name;
         Email = email;
     }
 
-    public static Customer Create(Guid id, string name, string email)
+    public static Customer Create(string name, string email)
     {
         var customerName = CustomerName.Create(name);
         var customerEmail = Email.Create(email);
 
-        return new Customer(id, customerName, customerEmail);
+        return new Customer(customerName, customerEmail);
     }
 
     public void Update(string name, string email)

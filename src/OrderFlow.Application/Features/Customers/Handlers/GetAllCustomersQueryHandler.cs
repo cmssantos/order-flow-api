@@ -6,14 +6,14 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Customers.Handlers;
 
-public class GetAllCustomersQueryHandler(ICustomerRepository customerRepository)
+public class GetAllCustomersQueryHandler(IUnitOfWork unitOfWork)
     : IRequestHandler<GetAllCustomersQuery, Result<List<CustomerDto>>>
 {
-    private readonly ICustomerRepository customerRepository = customerRepository;
+    private readonly IUnitOfWork unitOfWork = unitOfWork;
 
     public async Task<Result<List<CustomerDto>>> Handle(GetAllCustomersQuery query, CancellationToken cancellationToken)
     {
-        var customers = await customerRepository.GetAllAsync(cancellationToken);
+        var customers = await unitOfWork.Customers.GetAllAsync(cancellationToken);
 
         var customersDto = new List<CustomerDto>();
         foreach (var customer in customers)

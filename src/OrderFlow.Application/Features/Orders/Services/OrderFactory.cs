@@ -7,12 +7,11 @@ namespace OrderFlow.Application.Features.Orders.Services;
 public class OrderFactory
 {
     public static Result<Order> CreateOrderWithItems(
-        Guid orderId,
         Guid customerId,
-        IEnumerable<CreateOrderCommand.OrderItemInput> itemInputs,
+        IEnumerable<OrderItemInput> itemInputs,
         IEnumerable<Product> products)
     {
-        var order = Order.Create(orderId, customerId, DateTime.UtcNow, []);
+        var order = Order.Create(customerId, []);
 
         foreach (var itemInput in itemInputs)
         {

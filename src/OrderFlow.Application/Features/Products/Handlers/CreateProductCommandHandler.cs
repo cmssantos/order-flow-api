@@ -6,7 +6,8 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class CreateProductCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<CreateProductCommand, Result<Guid>>
+public class CreateProductCommandHandler(IUnitOfWork unitOfWork)
+    : IRequestHandler<CreateProductCommand, Result<Guid>>
 {
     private readonly IUnitOfWork unitOfWork = unitOfWork;
 
@@ -22,9 +23,11 @@ public class CreateProductCommandHandler(IUnitOfWork unitOfWork): IRequestHandle
         }
 
         var productCreationResult = ProductFactory.CreateProduct(
-            command.Name,
             command.Sku,
-            command.Price
+            command.Name,
+            command.Description,
+            command.Price,
+            command.Stock
         );
 
         var product = productCreationResult.Value!;

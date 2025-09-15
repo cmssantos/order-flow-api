@@ -10,6 +10,12 @@ public class OrderFlowDbContext(DbContextOptions<OrderFlowDbContext> options, Au
 {
     private readonly AuditInterceptor auditInterceptor = auditInterceptor;
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderFlowDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
         optionsBuilder.AddInterceptors(auditInterceptor);
 

@@ -15,9 +15,7 @@ public static class HttpResultExtensions
             return Results.NotFound(response);
         }
 
-        if (errorCode.Contains("AlreadyUsed", StringComparison.CurrentCultureIgnoreCase) ||
-            errorCode.Contains("AlreadyExists", StringComparison.CurrentCultureIgnoreCase) ||
-            errorCode.Contains("Conflict", StringComparison.CurrentCultureIgnoreCase))
+        if (errorCode.Contains("AlreadyUsed", StringComparison.CurrentCultureIgnoreCase))
         {
             return Results.Conflict(response);
         }

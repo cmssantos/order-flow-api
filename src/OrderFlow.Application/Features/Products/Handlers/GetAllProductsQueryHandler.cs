@@ -7,18 +7,18 @@ using OrderFlow.Application.Features.Products.Queries;
 namespace OrderFlow.Application.Features.Products.Handlers;
 
 public class GetAllProductsQueryHandler(IUnitOfWork unitOfWork)
-    : IRequestHandler<GetAllProductsQuery, Result<List<ProductDto>>>
+    : IRequestHandler<GetAllProductsQuery, Result<List<ProductListDto>>>
 {
     private readonly IUnitOfWork unitOfWork = unitOfWork;
 
-    public async Task<Result<List<ProductDto>>> Handle(GetAllProductsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<ProductListDto>>> Handle(GetAllProductsQuery query, CancellationToken cancellationToken)
     {
         var products = await unitOfWork.Products.GetAllAsync(cancellationToken);
 
-        var productsDto = new List<ProductDto>();
+        var productListDto = new List<ProductListDto>();
         foreach (var product in products)
         {
-            productsDto.Add(new ProductDto
+            productListDto.Add(new ProductListDto
             {
                 Id = product.Id,
                 Name = product.Name.Value,
@@ -27,6 +27,6 @@ public class GetAllProductsQueryHandler(IUnitOfWork unitOfWork)
             });
         }
 
-        return Result<List<ProductDto>>.Success(productsDto);
+        return Result<List<ProductListDto>>.Success(productListDto);
     }
 }

@@ -5,7 +5,8 @@ using OrderFlow.Domain.Interfaces.Repositories;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class DeleteProductCommandHandler(IUnitOfWork unitOfWork): IRequestHandler<DeleteProductCommand, Result<Unit>>
+public class DeleteProductCommandHandler(IUnitOfWork unitOfWork)
+    : IRequestHandler<DeleteProductCommand, Result<Unit>>
 {
     private readonly IUnitOfWork unitOfWork = unitOfWork;
 

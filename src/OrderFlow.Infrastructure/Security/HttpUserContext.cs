@@ -7,6 +7,13 @@ public class HttpUserContext(IHttpContextAccessor httpContextAccessor): IUserCon
 {
     private readonly IHttpContextAccessor httpContextAccessor = httpContextAccessor;
 
-    public string? UserId => httpContextAccessor.HttpContext?.User?.FindFirst("sub")?.Value;
-    public string? IpAddress => httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+    public string? UserId => httpContextAccessor
+        .HttpContext?
+        .User?
+        .FindFirst("sub")?.Value;
+
+    public string? IpAddress => httpContextAccessor
+        .HttpContext?
+        .Connection?
+        .RemoteIpAddress?.ToString();
 }

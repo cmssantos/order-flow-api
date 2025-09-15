@@ -7,6 +7,7 @@ namespace OrderFlow.Domain.Entities;
 public class Order: BaseEntity
 {
     public Guid CustomerId { get; private set; }
+
     public OrderStatus Status { get; private set; }
 
     private readonly List<OrderItem> orderItems = [];
@@ -86,7 +87,7 @@ public class Order: BaseEntity
         Status = newStatus;
     }
 
-    public decimal GetTotal() => orderItems.Sum(item => item.GetTotal());
+    public decimal Total => orderItems.Sum(item => item.Total);
 
     private static bool IsValidStatusTransition(OrderStatus current, OrderStatus next)
     {

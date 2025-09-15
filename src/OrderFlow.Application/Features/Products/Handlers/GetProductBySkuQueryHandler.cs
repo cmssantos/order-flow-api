@@ -6,19 +6,19 @@ using OrderFlow.Application.Features.Products.Queries;
 
 namespace OrderFlow.Application.Features.Products.Handlers;
 
-public class GetProductByIdQueryHandler(IUnitOfWork unitOfWork)
-    : IRequestHandler<GetProductByIdQuery, Result<ProductDetailDto>>
+public class GetProductBySkuQueryHandler(IUnitOfWork unitOfWork)
+    : IRequestHandler<GetProductBySkuQuery, Result<ProductDetailDto>>
 {
     private readonly IUnitOfWork unitOfWork = unitOfWork;
 
-    public async Task<Result<ProductDetailDto>> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<ProductDetailDto>> Handle(GetProductBySkuQuery query, CancellationToken cancellationToken)
     {
-        var product = await unitOfWork.Products.GetByIdAsync(query.Id, cancellationToken);
+        var product = await unitOfWork.Products.GetBySkuAsync(query.Sku, cancellationToken);
         if (product == null)
         {
             return Result<ProductDetailDto>.Failure(
                 "Product.NotFound",
-                $"Product with ID {query.Id} not found."
+                $"Product with SKU {query.Sku} not found."
             );
         }
 

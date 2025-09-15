@@ -6,7 +6,14 @@ public abstract class BaseEntity
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
 
-    public void SetCreated() => CreatedAt = DateTime.UtcNow;
+    protected void SetCreated()
+    {
+        if (CreatedAt == default)
+        {
+            CreatedAt = DateTime.UtcNow;
+        }
+        UpdatedAt = CreatedAt;
+    }
 
-    public void SetUpdated() => UpdatedAt = DateTime.UtcNow;
+    protected void SetUpdated() => UpdatedAt = DateTime.UtcNow;
 }

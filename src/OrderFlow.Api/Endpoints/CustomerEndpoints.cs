@@ -17,9 +17,9 @@ public static class CustomerEndpoints
         group.MapGet("/", async (ISender sender) =>
         {
             var command = new GetAllCustomersQuery();
-
             var result = await sender.Send(command);
-            return Results.Ok(result.Value);
+
+            return result.ToHttpResult();
         })
         .Produces<ApiResponse<List<CustomerDto>>>(StatusCodes.Status200OK)
         .WithName("GetAllCustomers");
@@ -27,8 +27,8 @@ public static class CustomerEndpoints
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
         {
             var command = new GetCustomerByIdQuery(id);
-
             var result = await sender.Send(command);
+
             return result.ToHttpResult();
         })
         .Produces<ApiResponse<CustomerDto>>(StatusCodes.Status200OK)
@@ -38,9 +38,10 @@ public static class CustomerEndpoints
         group.MapPost("/", async (CreateCustomerRequest request, ISender sender) =>
         {
             var command = new CreateCustomerCommand(request.FullName, request.Email);
-
             var result = await sender.Send(command);
-            return result.ToHttpResult(locationUri: $"/api/customers/{result.Value}");
+
+            var locationUri = $"{group}/{result.Value}";
+            return result.ToHttpResult(locationUri);
         })
         .Produces<ApiResponse<Guid>>(StatusCodes.Status201Created)
         .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
@@ -50,20 +51,21 @@ public static class CustomerEndpoints
         group.MapPut("/{id:guid}", async (Guid id, UpdateCustomerRequest request, ISender sender) =>
         {
             var command = new UpdateCustomerCommand(id, request.FullName, request.Email);
-
             var result = await sender.Send(command);
+
             return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)
         .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
         .Produces<ApiResponse<object>>(StatusCodes.Status404NotFound)
+        .Produces<ApiResponse<object>>(StatusCodes.Status409Conflict)
         .WithName("UpdateCustomer");
 
         group.MapDelete("/{id:guid}", async (Guid id, ISender sender) =>
         {
             var command = new DeleteCustomerCommand(id);
-
             var result = await sender.Send(command);
+
             return result.ToHttpResult();
         })
         .Produces(StatusCodes.Status204NoContent)

@@ -19,10 +19,12 @@ public static class OrderEndpoints
             var items = request.Items
                 .Select(i => new OrderItemInput(i.ProductId, i.Quantity))
                 .ToList();
-            var command = new CreateOrderCommand(request.CustomerId, items);
 
+            var command = new CreateOrderCommand(request.CustomerId, items);
             var result = await sender.Send(command);
-            return result.ToHttpResult(locationUri: $"/api/orders/{result.Value}");
+
+            var locationUri = $"{group}/{result.Value}";
+            return result.ToHttpResult(locationUri);
         })
         .Produces<ApiResponse<Guid>>(StatusCodes.Status201Created)
         .Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest)
@@ -32,8 +34,8 @@ public static class OrderEndpoints
         group.MapGet("/{id:guid}", async (Guid id, ISender sender) =>
         {
             var query = new GetOrderByIdQuery(id);
-
             var result = await sender.Send(query);
+
             return result.ToHttpResult();
         })
         .Produces<ApiResponse<OrderDto>>(StatusCodes.Status200OK)

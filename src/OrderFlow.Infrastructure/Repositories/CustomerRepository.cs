@@ -5,13 +5,13 @@ using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.Repositories;
 
-public class CustomerRepository(OrderFlowDbContext context): Repository<Customer>(context), ICustomerRepository
+public class CustomerRepository(OrderFlowDbContext context)
+    : Repository<Customer>(context), ICustomerRepository
 {
-    private readonly OrderFlowDbContext context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly DbSet<Customer> dbSet = context.Set<Customer>();
 
-    public Task<Customer?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<Customer?> GetByEmailAsync(
+        string email,
+        CancellationToken cancellationToken = default) =>
+        await dbSet.FirstOrDefaultAsync(p => p.Email.Value == email, cancellationToken);
 }

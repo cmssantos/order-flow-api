@@ -30,7 +30,7 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork): IRequestHandl
         }
 
         customer.Update(command.FullName, command.Email);
-        await unitOfWork.Customers.UpdateAsync(customer, cancellationToken);
+        unitOfWork.Customers.Update(customer);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Result<Unit>.Success(Unit.Value);

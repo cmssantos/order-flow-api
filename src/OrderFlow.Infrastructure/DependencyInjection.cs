@@ -16,14 +16,14 @@ public static class DependencyInjection
       IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
-        
+
         services.AddScoped<AuditInterceptor>();
         services.AddScoped<IUserContext, HttpUserContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         services.AddDbContext<OrderFlowDbContext>(options =>
             options.UseInMemoryDatabase("OrderFlowDb"));

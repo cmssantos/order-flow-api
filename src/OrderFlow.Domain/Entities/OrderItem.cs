@@ -5,7 +5,10 @@ namespace OrderFlow.Domain.Entities;
 public class OrderItem
 {
     public Guid Id { get; private set; }
+
+    public Guid OrderId { get; private set; }
     public Guid ProductId { get; private set; }
+
     public Quantity Quantity { get; private set; } = null!;
     public UnitPrice UnitPrice { get; private set; } = null!;
 
@@ -30,5 +33,5 @@ public class OrderItem
         return new OrderItem(id, productId, orderQuantity, orderUnitPrice);
     }
 
-    public decimal GetTotal() => Quantity.Value * UnitPrice.Value;
+    public decimal Total => Quantity.Value * UnitPrice.Value;
 }

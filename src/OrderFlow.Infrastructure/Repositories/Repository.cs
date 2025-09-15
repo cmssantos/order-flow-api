@@ -6,7 +6,6 @@ namespace OrderFlow.Infrastructure.Repositories;
 
 public class Repository<T>(OrderFlowDbContext context): IRepository<T> where T : class
 {
-    private readonly OrderFlowDbContext context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly DbSet<T> dbSet = context.Set<T>();
 
     public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default) =>
@@ -18,9 +17,7 @@ public class Repository<T>(OrderFlowDbContext context): IRepository<T> where T :
     public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(entity);
-
         await dbSet.AddAsync(entity, cancellationToken);
-        await context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
@@ -32,14 +29,11 @@ public class Repository<T>(OrderFlowDbContext context): IRepository<T> where T :
         }
 
         dbSet.Remove(entity);
-        await context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    public void Update(T entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
-
         dbSet.Update(entity);
-        await context.SaveChangesAsync(cancellationToken);
     }
 }

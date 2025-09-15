@@ -5,20 +5,18 @@ using OrderFlow.Infrastructure.Persistence;
 
 namespace OrderFlow.Infrastructure.Repositories;
 
-public class ProductRepository(OrderFlowDbContext context): Repository<Product>(context), IProductRepository
+public class ProductRepository(OrderFlowDbContext context)
+    : Repository<Product>(context), IProductRepository
 {
-    private readonly OrderFlowDbContext context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly DbSet<Product> dbSet = context.Set<Product>();
 
-    public Task<IReadOnlyCollection<Product>> GetByIdsAsync(
+    public async Task<IReadOnlyCollection<Product>> GetByIdsAsync(
         IEnumerable<Guid> ids,
-        CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+        CancellationToken cancellationToken = default) =>
+        await dbSet.Where(p => ids.Contains(p.Id)).ToListAsync(cancellationToken);
 
-    public Task<Product?> GetBySkuAsync(string sku, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<Product?> GetBySkuAsync(
+        string sku,
+        CancellationToken cancellationToken = default) =>
+        await dbSet.FirstOrDefaultAsync(p => p.Sku.Value == sku, cancellationToken);
 }

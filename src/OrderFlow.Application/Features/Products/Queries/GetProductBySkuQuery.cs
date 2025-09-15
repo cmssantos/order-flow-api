@@ -4,4 +4,4 @@ using OrderFlow.Application.Common.Models;
 
 namespace OrderFlow.Application.Features.Products.Queries;
 
-public record GetAllProductsQuery: IRequest<Result<List<ProductListDto>>>;
+public record GetProductBySkuQuery(string Sku): IRequest<Result<ProductDetailDto>>;

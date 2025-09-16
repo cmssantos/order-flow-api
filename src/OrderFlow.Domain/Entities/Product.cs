@@ -32,7 +32,12 @@ public class Product: BaseEntity
         SetCreated();
     }
 
-    public static Product Create(string sku, string name, string description, decimal price, int stock = 0)
+    public static Product Create(
+        string sku,
+        string name,
+        string description,
+        decimal price,
+        int stock = 0)
     {
         var productSku = Sku.Create(sku);
         var productName = ProductName.Create(name);
@@ -59,7 +64,6 @@ public class Product: BaseEntity
     public void UpdatePrice(decimal newPrice)
     {
         var updatedPrice = UnitPrice.Create(newPrice);
-
         if (Price.Value != newPrice)
         {
             Price = updatedPrice;

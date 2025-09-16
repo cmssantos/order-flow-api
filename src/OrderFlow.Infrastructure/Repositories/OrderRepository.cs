@@ -12,18 +12,18 @@ public class OrderRepository(OrderFlowDbContext context)
 
     public async Task<IEnumerable<Order>> GetByCustomerIdAsync(
         Guid customerId,
-        CancellationToken cancellationToken = default) =>
-        await dbSet
-            .AsNoTracking()
-            .Where(o => o.CustomerId == customerId)
-            .ToListAsync(cancellationToken);
+        CancellationToken cancellationToken = default)
+        =>  await dbSet
+                .AsNoTracking()
+                .Where(o => o.CustomerId == customerId)
+                .ToListAsync(cancellationToken);
 
     public async Task<IEnumerable<Order>> GetOrdersByDateRangeAsync(
         DateTime startDate,
         DateTime endDate,
-        CancellationToken cancellationToken = default) =>
-        await dbSet
-            .AsNoTracking()
-            .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
-            .ToListAsync(cancellationToken);
+        CancellationToken cancellationToken = default)
+        =>  await dbSet
+                .AsNoTracking()
+                .Where(o => o.CreatedAt >= startDate && o.CreatedAt <= endDate)
+                .ToListAsync(cancellationToken);
 }

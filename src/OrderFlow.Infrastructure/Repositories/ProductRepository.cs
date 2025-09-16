@@ -12,11 +12,11 @@ public class ProductRepository(OrderFlowDbContext context)
 
     public async Task<IReadOnlyCollection<Product>> GetByIdsAsync(
         IEnumerable<Guid> ids,
-        CancellationToken cancellationToken = default) =>
-        await dbSet.Where(p => ids.Contains(p.Id)).ToListAsync(cancellationToken);
+        CancellationToken cancellationToken = default)
+        =>  await dbSet.Where(p => ids.Contains(p.Id)).ToListAsync(cancellationToken);
 
     public async Task<Product?> GetBySkuAsync(
         string sku,
-        CancellationToken cancellationToken = default) =>
-        await dbSet.FirstOrDefaultAsync(p => p.Sku.Value == sku, cancellationToken);
+        CancellationToken cancellationToken = default)
+        =>  await dbSet.FirstOrDefaultAsync(p => p.Sku.Value == sku, cancellationToken);
 }

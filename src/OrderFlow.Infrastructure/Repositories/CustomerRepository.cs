@@ -12,6 +12,6 @@ public class CustomerRepository(OrderFlowDbContext context)
 
     public async Task<Customer?> GetByEmailAsync(
         string email,
-        CancellationToken cancellationToken = default) =>
-        await dbSet.FirstOrDefaultAsync(p => p.Email.Value == email, cancellationToken);
+        CancellationToken cancellationToken = default)
+        =>  await dbSet.FirstOrDefaultAsync(p => p.Email.Value == email, cancellationToken);
 }

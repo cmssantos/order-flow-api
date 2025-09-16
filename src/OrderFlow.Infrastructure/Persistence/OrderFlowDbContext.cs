@@ -5,7 +5,9 @@ using OrderFlow.Infrastructure.Interceptors;
 
 namespace OrderFlow.Infrastructure.Persistence;
 
-public class OrderFlowDbContext(DbContextOptions<OrderFlowDbContext> options, AuditInterceptor auditInterceptor)
+public class OrderFlowDbContext(
+    DbContextOptions<OrderFlowDbContext> options,
+    AuditInterceptor auditInterceptor)
     : DbContext(options)
 {
     private readonly AuditInterceptor auditInterceptor = auditInterceptor;
@@ -16,8 +18,8 @@ public class OrderFlowDbContext(DbContextOptions<OrderFlowDbContext> options, Au
         base.OnModelCreating(modelBuilder);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        optionsBuilder.AddInterceptors(auditInterceptor);
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        =>  optionsBuilder.AddInterceptors(auditInterceptor);
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Customer> Customers => Set<Customer>();

@@ -4,7 +4,9 @@
     "dictionaryDefinitions": [],
     "dictionaries": [],
     "words": [
-        "Mediat"
+        "Mediat",
+        "Serilog",
+        "ASPNETCORE"
     ],
     "ignoreWords": [],
     "import": []

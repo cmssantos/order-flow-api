@@ -8,11 +8,11 @@ public class Repository<T>(OrderFlowDbContext context): IRepository<T> where T :
 {
     private readonly DbSet<T> dbSet = context.Set<T>();
 
-    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default) =>
-       await dbSet.AsNoTracking().ToListAsync(cancellationToken);
+    public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default)
+        => await dbSet.AsNoTracking().ToListAsync(cancellationToken);
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default) =>
-        await dbSet.FindAsync([id], cancellationToken);
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        => await dbSet.FindAsync([id], cancellationToken);
 
     public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
     {

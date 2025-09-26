@@ -25,9 +25,9 @@ public class Product: BaseEntity
     {
         Sku = sku;
         Name = name;
-        Description = description;
         Price = price;
         Stock = stock;
+        Description = description;
 
         SetCreated();
     }
@@ -41,9 +41,9 @@ public class Product: BaseEntity
     {
         var productSku = Sku.Create(sku);
         var productName = ProductName.Create(name);
-        var productDescription = ProductDescription.Create(description);
         var productPrice = UnitPrice.Create(price);
         var productStock = StockQuantity.Create(stock);
+        var productDescription = ProductDescription.Create(description);
 
         return new Product(productSku, productName, productDescription, productPrice, productStock);
     }

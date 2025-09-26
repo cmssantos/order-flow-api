@@ -7,8 +7,7 @@ namespace OrderFlow.Infrastructure.Persistence;
 
 public class OrderFlowDbContext(
     DbContextOptions<OrderFlowDbContext> options,
-    AuditInterceptor auditInterceptor)
-    : DbContext(options)
+    AuditInterceptor auditInterceptor): DbContext(options)
 {
     private readonly AuditInterceptor auditInterceptor = auditInterceptor;
 
@@ -19,7 +18,7 @@ public class OrderFlowDbContext(
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        =>  optionsBuilder.AddInterceptors(auditInterceptor);
+        => optionsBuilder.AddInterceptors(auditInterceptor);
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Customer> Customers => Set<Customer>();

@@ -5,6 +5,7 @@ namespace OrderFlow.Domain.ValueObjects;
 public record ProductName
 {
     public string Value { get; }
+
     private ProductName(string value) => Value = value;
 
     public static ProductName Create(string value)

@@ -5,6 +5,7 @@ namespace OrderFlow.Domain.ValueObjects;
 public record StockQuantity
 {
     public int Value { get; }
+
     private StockQuantity(int value) => Value = value;
 
     public static StockQuantity Create(int value)

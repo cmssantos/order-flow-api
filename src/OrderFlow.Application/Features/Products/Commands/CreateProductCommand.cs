@@ -8,5 +8,4 @@ public record CreateProductCommand(
     string Sku,
     string Description,
     decimal Price,
-    int Stock = 0)
-    : IRequest<Result<Guid>>;
+    int Stock = 0): IRequest<Result<Guid>>;
